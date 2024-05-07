@@ -13,7 +13,7 @@
 
     <Head title="Rede Social" />
     <AuthenticatedLayout>
-        <div class="grid lg:grid-cols-12 mx-4 gap-3 max-sm:gap-0 h-full">
+        <div class="grid py-20 lg:grid-cols-12 mx-4 gap-3 max-sm:gap-0 h-full">
             <div class="lg:col-span-3 lg:order-1 h-full">
                 <GroupList />
             </div>

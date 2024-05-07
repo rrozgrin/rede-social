@@ -40,22 +40,23 @@ const closeModal = () => {
 <template>
     <section class="space-y-6">
         <header>
-            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Excluir Conta</h2>
+            <h2 class="text-lg font-medium text-purple-900 ">Excluir Conta</h2>
 
-            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                Depois que sua conta for excluída, todos os seus recursos e dados serão excluídos permanentemente. Antes de excluir sua conta, baixe quaisquer dados ou informações que você deseja reter.            </p>
+            <p class="mt-1 text-sm text-purple-600 ">
+                Depois que sua conta for excluída, todos os seus recursos e dados serão excluídos permanentemente. Antes de excluir sua conta, baixe todos os dados ou informações que deseja manter.
+            </p>
         </header>
 
         <DangerButton @click="confirmUserDeletion">Excluir Conta</DangerButton>
 
         <Modal :show="confirmingUserDeletion" @close="closeModal">
             <div class="p-6">
-                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    Tem certeza de que deseja excluir sua conta?
+                <h2 class="text-lg font-medium text-purple-900 ">
+                    Você está certo que deseja excluir a conta?
                 </h2>
 
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    Depois que sua conta for excluída, todos os seus recursos e dados serão excluídos permanentemente. Por favor digite sua senha para confirmar que deseja excluir permanentemente sua conta.
+                <p class="mt-1 text-sm text-purple-600 ">
+                    Depois que sua conta for excluída, todos os seus recursos e dados serão excluídos permanentemente. Por favor, digite sua senha para confirmar que deseja excluir permanentemente sua conta.
                 </p>
 
                 <div class="mt-6">
@@ -83,7 +84,7 @@ const closeModal = () => {
                         :disabled="form.processing"
                         @click="deleteUser"
                     >
-                        Excluir conta
+                        Excluir Conta
                     </DangerButton>
                 </div>
             </div>

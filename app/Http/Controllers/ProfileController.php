@@ -49,7 +49,9 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit');
+        $username = $request->user()->username;
+
+        return Redirect::route('perfil', ['user' => $username]);
     }
 
     /**

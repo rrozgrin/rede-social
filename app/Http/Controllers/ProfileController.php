@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
@@ -80,14 +81,17 @@ class ProfileController extends Controller
     public function updateImages(Request $request)
     {
         try {
-            $user = $request->user(); 
-            
+            $user = $request->user();
+
             $data = $request->validate([
                 'cover' => ['nullable', 'image'],
                 'avatar' => ['nullable', 'image'],
             ]);
 
             if ($request->hasFile('cover')) {
+                if ($user->cover_path) {
+                    Storage::disk('public')->delete($user->cover_path);
+                }
                 $coverPath = $request->file('cover')->store('covers/' . $user->id, 'public');
                 $user->update(['cover_path' => $coverPath]);
             }
@@ -99,7 +103,7 @@ class ProfileController extends Controller
 
             $username = $user->username;
 
-            return back()->with('status','cover-image-update');
+            return back()->with('status', 'cover-image-update');
         } catch (\Exception $e) {
             Log::error('Erro ao atualizar imagens do usuário: ' . $e->getMessage());
             throw $e;

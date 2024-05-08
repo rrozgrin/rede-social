@@ -97,6 +97,9 @@ class ProfileController extends Controller
             }
 
             if ($request->hasFile('avatar')) {
+                if ($user->avatar_path) {
+                    Storage::disk('public')->delete($user->avatar_path);
+                }
                 $avatarPath = $request->file('avatar')->store('avatars/' . $user->id, 'public');
                 $user->update(['avatar_path' => $avatarPath]);
             }

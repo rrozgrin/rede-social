@@ -9,8 +9,8 @@ Route::get('/', [HomeController::class, 'index'])->middleware(['auth', 'verified
 Route::get('/u/{user:username}', [ProfileController::class, 'index'])->name('perfil');
 
 Route::middleware('auth')->group(function () {
-    Route::get('u/', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('u/', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/update-image', [ProfileController::class, 'updateImages'])->name('profile.updateImage');
+    // Route::patch('u/', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('u/', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

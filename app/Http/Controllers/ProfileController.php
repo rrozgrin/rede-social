@@ -78,34 +78,31 @@ class ProfileController extends Controller
     }
 
     public function updateImages(Request $request)
-{
-    try {
-        $user = Auth::user(); // Obter o usuário autenticado atualmente
+    {
+        try {
+            $user = $request->user(); 
+            
+            $data = $request->validate([
+                'cover' => ['nullable', 'image'],
+                'avatar' => ['nullable', 'image'],
+            ]);
 
-        $data = $request->validate([
-            'cover' => ['nullable', 'image'],
-            'avatar' => ['nullable', 'image'],
-        ]);
+            if ($request->hasFile('cover')) {
+                $coverPath = $request->file('cover')->store('covers/' . $user->id, 'public');
+                $user->update(['cover_path' => $coverPath]);
+            }
 
-        if ($request->hasFile('cover')) {
-            $coverPath = $request->file('cover')->store('user-' . $user->id, 'public');
-            $user->update(['cover_path' => $coverPath]);
-            Log::info('Capa do usuário atualizada com sucesso.');
+            if ($request->hasFile('avatar')) {
+                $avatarPath = $request->file('avatar')->store('avatars/' . $user->id, 'public');
+                $user->update(['avatar_path' => $avatarPath]);
+            }
+
+            $username = $user->username;
+
+            return back()->with('status','cover-image-update');
+        } catch (\Exception $e) {
+            Log::error('Erro ao atualizar imagens do usuário: ' . $e->getMessage());
+            throw $e;
         }
-
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->store('user-' . $user->id, 'public');
-            $user->update(['avatar_path' => $avatarPath]);
-            Log::info('Avatar do usuário atualizado com sucesso.');
-        }
-
-        // Obter o ID do usuário autenticado
-        $username = $user->username;
-
-        return \Inertia\Inertia::location(route('perfil', ['user' => $username]));
-    } catch (\Exception $e) {
-        Log::error('Erro ao atualizar imagens do usuário: ' . $e->getMessage());
-        throw $e;
     }
-}
 }

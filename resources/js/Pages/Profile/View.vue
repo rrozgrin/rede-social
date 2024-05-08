@@ -1,6 +1,14 @@
 <template>
     <AuthenticatedLayout>
         <div class="container mx-auto pt-[75px] overflow-auto ">
+            <div v-show="showNotification && status === 'cover-image-update'"
+                class="px-2  mb-1 py-2 font-medium h-full text-sm bg-emerald-500 text-white">
+                Imagem da capa atualizada com sucesso
+            </div>
+            <div v-show="errors.cover"
+                class="px-2 mb-1 py-2 font-medium h-full text-sm bg-red-500 text-white">
+                O arquivo precisa ser do tipo imagem
+            </div>
             <div class="relative">
                 <img class="mx-auto h-[200px] w-full object-cover"
                     :src="coverImageSrc || (user.cover_url ? '/storage/' + user.cover_url : '/storage/user-default.jpg') || '/img/default_cover.jpg'">
@@ -96,6 +104,7 @@
     const coverImageSrc = ref('');
     const authUser = usePage().props.auth.user;
     const isMyProfile = computed(() => authUser && authUser.id === props.user.id);
+    const showNotification = ref(true);
 
     const props = defineProps({
         errors: Object,
@@ -128,7 +137,14 @@
 
     function submitImageFile() {
         console.log(imagesForm.cover)
-        imagesForm.post(route('profile.updateImage'))
+        imagesForm.post(route('profile.updateImage'), {
+            onSuccess: () => {
+                cancelCoverImage()
+                setTimeout(() => {
+                    showNotification.value = false
+                }, 3000)
+            }
+        })
     }
 
 

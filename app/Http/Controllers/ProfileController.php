@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Resources\UserResource;
-use Illuminate\Foundation\Auth\User;
+use App\Models\User;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -28,14 +29,14 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    
-     public function edit(Request $request): Response
-     {
-         return Inertia::render('Profile/Edit', [
-             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-             'status' => session('status'),
-         ]);
-     }
+
+    public function edit(Request $request): Response
+    {
+        return Inertia::render('Profile/Edit', [
+            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
+            'status' => session('status'),
+        ]);
+    }
 
     /**
      * Update the user's profile information.
@@ -76,12 +77,35 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 
-    public function updateImages(Request $request){
+    public function updateImages(Request $request)
+{
+    try {
+        $user = Auth::user(); // Obter o usuário autenticado atualmente
+
         $data = $request->validate([
-           'cover' => ['nullable','image'],
-           'avatar' => ['nullable','image'],
+            'cover' => ['nullable', 'image'],
+            'avatar' => ['nullable', 'image'],
         ]);
 
-        dd($data);
+        if ($request->hasFile('cover')) {
+            $coverPath = $request->file('cover')->store('user-' . $user->id, 'public');
+            $user->update(['cover_path' => $coverPath]);
+            Log::info('Capa do usuário atualizada com sucesso.');
+        }
+
+        if ($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('user-' . $user->id, 'public');
+            $user->update(['avatar_path' => $avatarPath]);
+            Log::info('Avatar do usuário atualizado com sucesso.');
+        }
+
+        // Obter o ID do usuário autenticado
+        $username = $user->username;
+
+        return \Inertia\Inertia::location(route('perfil', ['user' => $username]));
+    } catch (\Exception $e) {
+        Log::error('Erro ao atualizar imagens do usuário: ' . $e->getMessage());
+        throw $e;
     }
+}
 }

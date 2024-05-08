@@ -3,7 +3,7 @@
         <div class="container mx-auto pt-[75px] overflow-auto ">
             <div class="relative">
                 <img class="mx-auto h-[200px] w-full object-cover"
-                    :src="coverImageSrc || user.cover_url || '/img/default_cover.jpg'">
+                    :src="coverImageSrc || (user.cover_url ? '/storage/' + user.cover_url : '/storage/user-default.jpg') || '/img/default_cover.jpg'">
                 <div class="absolute  top-2 right-2">
                     <button v-if="!coverImageSrc"
                         class="opacity-60 hover:opacity-100 bg-purple-50 hover:bg-purple-600 text-purple-600 hover:text-purple-50 py-1 px-2 text-xs flex items-center">
@@ -98,6 +98,7 @@
     const isMyProfile = computed(() => authUser && authUser.id === props.user.id);
 
     const props = defineProps({
+        errors: Object,
         mustVerifyEmail: {
             type: Boolean,
         },

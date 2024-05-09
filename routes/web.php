@@ -10,8 +10,8 @@ Route::get('/u/{user:username}', [ProfileController::class, 'index'])->name('per
 
 Route::middleware('auth')->group(function () {
     Route::post('/profile/update-image', [ProfileController::class, 'updateImages'])->name('profile.updateImage');
-    // Route::patch('u/', [ProfileController::class, 'update'])->name('profile.update');
-    // Route::delete('u/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('profile/', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('profile/', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__ . '/auth.php';

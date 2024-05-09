@@ -23,7 +23,8 @@ class ProfileController extends Controller
         return Inertia::render('Profile/View', [
             'mustVerifyEmail' => $user instanceof MustVerifyEmail,
             'status' => session('status'),
-            'user' => new UserResource($user)
+            'success' => session('success'),
+            'user' => new UserResource($user),
         ]);
     }
 
@@ -53,8 +54,9 @@ class ProfileController extends Controller
         $request->user()->save();
 
         $username = $request->user()->username;
+        $success = 'Perfil atualizado com sucesso';
 
-        return Redirect::route('perfil', ['user' => $username]);
+        return Redirect::route('perfil', ['user' => $username])->with('success',$success);
     }
 
     /**
@@ -94,6 +96,7 @@ class ProfileController extends Controller
                 }
                 $coverPath = $request->file('cover')->store('covers/' . $user->id, 'public');
                 $user->update(['cover_path' => $coverPath]);
+                $success = 'Foto da capa atualizada com sucesso';
             }
 
             if ($request->hasFile('avatar')) {
@@ -102,11 +105,12 @@ class ProfileController extends Controller
                 }
                 $avatarPath = $request->file('avatar')->store('avatars/' . $user->id, 'public');
                 $user->update(['avatar_path' => $avatarPath]);
+                $success = 'Foto do perfil atualizada com sucesso';
             }
 
             $username = $user->username;
 
-            return back()->with('status', 'cover-image-update');
+            return back()->with('success', $success);
         } catch (\Exception $e) {
             Log::error('Erro ao atualizar imagens do usuário: ' . $e->getMessage());
             throw $e;

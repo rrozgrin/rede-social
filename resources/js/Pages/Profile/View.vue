@@ -1,9 +1,9 @@
 <template>
     <AuthenticatedLayout>
         <div class="container mx-auto pt-[75px] overflow-auto ">
-            <div v-show="showNotification && status === 'cover-image-update'"
+            <div v-show="showNotification && success"
                 class="px-2  mb-1 py-2 font-medium h-full text-sm bg-emerald-500 text-white">
-                Imagem da capa atualizada com sucesso
+                {{ success }}
             </div>
             <div v-show="errors.cover" class="px-2 mb-1 py-2 font-medium h-full text-sm bg-red-500 text-white">
                 O arquivo precisa ser do tipo imagem
@@ -36,7 +36,7 @@
                 <div class="flex">
                     <div class="relative flex justify-center items-end ml-5 h-5 -bottom-[20px]">
                         <img class=" w-[150px] h-[150px] rounded-full"
-                        :src="avatarImageSrc || (user.avatar_url ? '/storage/' + user.avatar_url : '/img/default_avatar.png')">
+                            :src="avatarImageSrc || (user.avatar_url ? '/storage/' + user.avatar_url : '/img/default_avatar.png')">
                         <div class="absolute">
                             <button v-if="!avatarImageSrc"
                                 class="opacity-10 hover:opacity-50 w-[150px] h-[75px]  justify-center rounded-br-full rounded-bl-full bg-white  hover:bg-purple-300 text-purple-900 hover:text-purple-900 py-1 px-2 text-xs flex items-center">
@@ -57,8 +57,7 @@
                             </div>
                         </div>
                     </div>
-                    <div
-                        class="flex justify-between items-start flex-1 Secondary ml-5 text-purple-100 mt-2 pb-3">
+                    <div class="flex justify-between items-start flex-1 Secondary ml-5 text-purple-100 mt-2 pb-3">
                         <h2 class="font-semibold text-lg">{{ user.name }}</h2>
                         <SecondaryButton v-if="isMyProfile">
                             <PencilIcon class="h-3 w-3 mr-1" />
@@ -70,9 +69,6 @@
             <div>
                 <TabGroup>
                     <TabList class="sm:px-6 lg:px-16  bg-purple-100 flex space-x-1 rounded-lg pt-1">
-                        <Tab v-if="isMyProfile" v-slot="{ selected }" as="template">
-                            <TabItem text="Meu perfil" :selected="selected" />
-                        </Tab>
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Posts" :selected="selected" />
                         </Tab>
@@ -82,13 +78,12 @@
                         <Tab v-slot="{ selected }" as="template">
                             <TabItem text="Fotos" :selected="selected" />
                         </Tab>
+                        <Tab v-if="isMyProfile" v-slot="{ selected }" as="template">
+                            <TabItem text="Meu perfil" :selected="selected" />
+                        </Tab>
                     </TabList>
 
                     <TabPanels class="mt-2">
-                        <TabPanel v-if="isMyProfile" key="posts"
-                            class="rounded-xl bg-purple-100 p-3 shadow-inner shadow-purple-900">
-                            <Edit :must-verify-email="mustVerifyEmail" :status="status" />
-                        </TabPanel>
                         <TabPanel key="posts" class="rounded-xl bg-purple-100 p-3 shadow-inner shadow-purple-900">
                             Posts
                         </TabPanel>
@@ -97,6 +92,10 @@
                         </TabPanel>
                         <TabPanel key="posts" class="rounded-xl bg-purple-100 p-3 shadow-inner shadow-purple-900">
                             Fotos
+                        </TabPanel>
+                        <TabPanel v-if="isMyProfile" key="posts"
+                            class="rounded-xl bg-purple-100 p-3 shadow-inner shadow-purple-900">
+                            <Edit :must-verify-email="mustVerifyEmail" :status="status" />
                         </TabPanel>
                     </TabPanels>
                 </TabGroup>
@@ -133,6 +132,9 @@
             type: Boolean,
         },
         status: {
+            type: String,
+        },
+        success: {
             type: String,
         },
         user: {

@@ -5,14 +5,18 @@
     import CreatePost from '@/Components/app/CreatePost.vue';
     import PostList from '@/Components/app/PostList.vue';
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+
     defineProps({
+        posts: Object,
     });
+
 </script>
 
 <template>
 
     <Head title="Rede Social" />
     <AuthenticatedLayout>
+        <!-- <pre>{{ posts }}</pre> -->
         <div class="grid py-20 lg:grid-cols-12 mx-4 gap-3 max-sm:gap-0 h-full">
             <div class="lg:col-span-3 lg:order-1 h-full">
                 <GroupList />
@@ -22,7 +26,7 @@
             </div>
             <div class="lg:col-span-6 lg:order-2 h-full">
                 <CreatePost />
-                <PostList />
+                <PostList :posts="posts.data" />
             </div>
         </div>
     </AuthenticatedLayout>

@@ -14,7 +14,7 @@
 <template>
     <div class="bg-white  rounded-l-3xl rounded-r-xl mb-3 p-5 ">
         <div class="flex items-center gap-3 ">
-            <img :src="post.user.avatar"
+            <img :src="'storage/' + post.user.avatar_url"
                 class="w-[48px] rounded-full hover:ring-purple-600 hover:ring-2 transition-all" />
             <div>
                 <h4 class="font-bold text-purple-950 m-0">
@@ -27,17 +27,20 @@
                 <small class="text-purple-600">{{ post.created_at }}</small>
             </div>
         </div>
-        <div class="mb-3">
+        <div class="mb-3"  v-if="post && post.body">
             <Disclosure v-slot="{ open }">
-                <div v-if="!open" v-html="post.body.substring(0, 200)" />
-                <DisclosurePanel>
-                    <div v-html="post.body" />
-                </DisclosurePanel>
-                <div class="flex justify-end">
-                    <DisclosureButton class="text-purple-400 text-sm">
-                        <span>{{ open ? '...leia menos' : 'leia mais...' }}</span>
-                    </DisclosureButton>
-                </div>
+                <div v-if="!open && post.body" v-html="post.body.substring(0, 200)" class="ml-14 p-1" />
+                <template v-if="post.body.length >= 200">
+                    <DisclosurePanel>
+                        <div v-html="post.body" />
+                    </DisclosurePanel>
+                    <div class="flex justify-end">
+                        <DisclosureButton class="text-purple-400 text-sm">
+                            <span>{{ open ? '...leia menos' : 'leia mais...' }}</span>
+                        </DisclosureButton>
+                    </div>
+                </template>
+
             </Disclosure>
         </div>
         <!-- <div class="grid grid-cols-2 gap-3 mb-3">

@@ -32,7 +32,7 @@
                 <div v-if="!open && post.body" v-html="post.body.substring(0, 200)" class="ml-14 p-1" />
                 <template v-if="post.body.length >= 200">
                     <DisclosurePanel>
-                        <div v-html="post.body" />
+                        <div v-html="post.body" class="ml-14 mr-8 px-1" />
                     </DisclosurePanel>
                     <div class="flex justify-end">
                         <DisclosureButton class="text-purple-400 text-sm">
@@ -40,14 +40,8 @@
                         </DisclosureButton>
                     </div>
                 </template>
-
             </Disclosure>
         </div>
-        <!-- <div class="grid grid-cols-2 gap-3 mb-3">
-            <div v-for="attachment of post.attachments"> 
-                <img v-if="isImage(attachment)" :src="attachments.url" class="object-cover aspect-square" />
-            </div>
-        </div> -->
         <div class="flex justify-end">
             <button class="flex mx-2 rounded-md gap-1 bg-violet-100 hover:bg-purple-200 justify-center py-1 px-2">
                 <HandThumbUpIcon class="w-5 h-5" />

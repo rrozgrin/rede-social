@@ -2,19 +2,25 @@
     import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
     import { HandThumbUpIcon, ChatBubbleLeftRightIcon, ChevronDownIcon, TrashIcon, EllipsisVerticalIcon, PencilIcon } from '@heroicons/vue/24/solid'
     import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
+    import { ref } from "vue";
 
     // import ArchiveIcon from './archive-icon.vue'
     // import DuplicateIcon from './duplicate-icon.vue'
     // import MoveIcon from './move-icon.vue'
 
 
-
-    defineProps({
+    const emit = defineEmits(['editClick'])
+    const props = defineProps({
         post: Object
     })
+    
     function isImage(attachment) {
         const mime = attachment.mime.split('/')
         return mime[0].toLowerCase() === 'image'
+    }
+
+    function openEditModal(){
+        emit('editClick', props.post)
     }
 </script>
 
@@ -26,8 +32,8 @@
                     <img :src="'storage/' + post.user.avatar_url"
                         class="w-[80px] rounded-full hover:ring-purple-600 hover:ring-2 transition-all" />
                 </a>
-                <div>
-                    <h4 class="font-bold pl-3  w-[520px]  text-purple-950 m-0">
+                <div class="w-full">
+                    <h4 class="font-bold pl-3 text-purple-950 m-0">
                         <a href="#" class="hover:underline"> {{ post.user.name }}</a>
                         <template v-if="post.group">
                             |
@@ -37,15 +43,12 @@
                     <small class="text-purple-600 pl-3 -pt-">{{ post.created_at }}</small>
                 </div>
                 <div class="w-9 ">
-
-
                     <Menu as="div" class="relative inline-block text-left">
                         <div>
                             <MenuButton
                                 class="w-8 h-8 rounded-full hover:bg-purple-900 hover:text-purple-100 text-purple-900  transition flex items-center justify-center">
 
-                                <EllipsisVerticalIcon class=" h-6 w-6  "
-                                    aria-hidden="true" />
+                                <EllipsisVerticalIcon class=" h-6 w-6  " aria-hidden="true" />
                             </MenuButton>
                         </div>
 
@@ -59,7 +62,7 @@
                                 class="absolute right-0 mt-1 w-32 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
                                 <div class="px-1 py-1">
                                     <MenuItem v-slot="{ active }">
-                                    <button :class="[
+                                    <button @click="openEditModal" :class="[
                                         active ? 'bg-purple-900 text-white' : 'text-purple-900',
                                         'group flex w-full items-center rounded-md px-2 py-2 text-sm',
                                     ]">
@@ -67,7 +70,7 @@
                                             'mr-2 h-5 w-5 text-purple-900',
                                             active ? 'bg-purple-900 text-white' : 'text-purple-900',
                                         ]" aria-hidden="true" />
-                                        Edit
+                                        Editar
                                     </button>
                                     </MenuItem>
                                 </div>
@@ -82,17 +85,13 @@
                                             'mr-2 h-5 w-5 text-purple-900',
                                             active ? 'bg-purple-900 text-white' : 'text-purple-900',
                                         ]" aria-hidden="true" />
-                                        Delete
+                                        Excluir
                                     </button>
                                     </MenuItem>
                                 </div>
                             </MenuItems>
                         </transition>
                     </Menu>
-
-
-
-
                 </div>
             </div>
         </div>
@@ -122,6 +121,7 @@
             </button>
         </div>
     </div>
+    
 </template>
 
 <style scoped></style>

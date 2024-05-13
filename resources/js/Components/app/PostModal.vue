@@ -18,7 +18,7 @@
                                     Editar post
                                 </DialogTitle>
                                 <div class="mt-2">
-                                    <TextareaInput v-model="post.body" class=" w-full"></TextareaInput>
+                                    <TextareaInput v-model="form.body" class=" w-full"></TextareaInput>
                                 </div>
 
                                 <div class="mt-1 flex gap-1 justify-end">
@@ -64,8 +64,6 @@
         modelValue: Boolean,
     })
 
-    const reactivePost = reactive(props.post);
-
     const form = useForm({
         id: null,
         body: '',
@@ -76,22 +74,24 @@
         set: (value) => emit('update:modelValue', value),
     })
 
-    function submit() {
-        const form = useForm({
-            id: props.post.post_id,
-            body: props.post.body,
-        })
+    watch(() => props.post, () => {
+        form.id = props.post.id
+        form.body = props.post.body
+    })
 
-        form.put(route('post.update', props.post))
-        show.value = false
+    function submit() {
+        form.put(route('post.update', props.post.id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                show.value = false
+            }
+        })
     }
 
     function closeModal() {
         show.value = false
     }
 
-    watch(reactivePost, () => {
-        console.log('mudou')
-    }, { immediate: true, deep: true })
+
 
 </script>

@@ -4,11 +4,6 @@
     import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
     import { ref } from "vue";
 
-    // import ArchiveIcon from './archive-icon.vue'
-    // import DuplicateIcon from './duplicate-icon.vue'
-    // import MoveIcon from './move-icon.vue'
-
-
     const emit = defineEmits(['editClick'])
     const props = defineProps({
         post: Object
@@ -40,7 +35,7 @@
                             <a href="#" class="hover:underline">{{ post.group.name }}</a>
                         </template>
                     </h4>
-                    <small class="text-purple-600 pl-3 -pt-">{{ post.created_at }}</small>
+                    <small class="text-purple-600 pl-3 -pt-">{{ post.updated_at }}</small>
                 </div>
                 <div class="w-9 ">
                     <Menu as="div" class="relative inline-block text-left">

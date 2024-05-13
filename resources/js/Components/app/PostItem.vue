@@ -3,6 +3,7 @@
     import { HandThumbUpIcon, ChatBubbleLeftRightIcon, ChevronDownIcon, TrashIcon, EllipsisVerticalIcon, PencilIcon } from '@heroicons/vue/24/solid'
     import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
     import { ref } from "vue";
+    import { router } from '@inertiajs/vue3';
 
     const emit = defineEmits(['editClick'])
     const props = defineProps({
@@ -16,6 +17,14 @@
 
     function openEditModal(){
         emit('editClick', props.post)
+    }
+
+    function deletePost() {
+        if(window.confirm('Está certo que deseja exlcuir esse post?')){
+            router.delete(route('post.destroy',props.post),{
+                preserveScroll: true,
+            })
+        }
     }
 </script>
 
@@ -72,7 +81,7 @@
 
                                 <div class="px-1 py-1">
                                     <MenuItem v-slot="{ active }">
-                                    <button :class="[
+                                    <button @click="deletePost" :class="[
                                         active ? 'bg-purple-900 text-white' : 'text-purple-900',
                                         'group flex w-full items-center rounded-md px-2 py-2 text-sm',
                                     ]">

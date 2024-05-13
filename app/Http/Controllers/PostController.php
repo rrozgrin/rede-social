@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
-use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -34,6 +33,13 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        //TODO
+        $id = Auth::id();
+        if ($post->user_id !== $id) {
+            return "Sem acesso para excluir esse post";
+        }
+
+        $post->delete();
+        return back();
     }
 }

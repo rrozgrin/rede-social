@@ -44,13 +44,7 @@
 
 <script setup>
     import { computed, reactive, watch } from 'vue'
-    import {
-        TransitionRoot,
-        TransitionChild,
-        Dialog,
-        DialogPanel,
-        DialogTitle,
-    } from '@headlessui/vue'
+    import {TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle} from '@headlessui/vue'
     import TextareaInput from '../TextareaInput.vue';
     import { useForm } from '@inertiajs/vue3';
 
@@ -91,7 +85,4 @@
     function closeModal() {
         show.value = false
     }
-
-
-
 </script>

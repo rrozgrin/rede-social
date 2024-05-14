@@ -13,9 +13,9 @@
                             enter-to="opacity-100 scale-100" leave="duration-200 ease-in"
                             leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
                             <DialogPanel
-                                class="w-[720px] h-[300px] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                class="lg:w-[600px] lg:h-[300px] sm:w-full transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                                 <DialogTitle as="h3" class="text-lg font-medium leading-6 text-purple-900">
-                                    Editar post
+                                    {{ form.id ? 'Editar post' : 'Novo post' }}
                                 </DialogTitle>
                                 <div class="mt-2">
                                     <ckeditor :editor="editor" v-model="form.body" :config="editorConfig">
@@ -50,16 +50,18 @@
     import TextareaInput from '../TextareaInput.vue';
     import { useForm } from '@inertiajs/vue3';
 
+
     import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
     //CKEditor 
     const editor = ClassicEditor;
     const editorConfig = {
-        toolbar: ['bold', 'italic', '|', 'bulletedList', 'numberedList', '|', 'outdent', 'indent', 'blockQuote','|','link','heading']
+        toolbar: ['bold', 'italic', '|', 'bulletedList', 'numberedList', '|', 'outdent', 'indent', 'blockQuote', '|', 'link', 'heading']
     }
 
     //Formulário do post
     const emit = defineEmits(['update:modelValue'])
+
     const props = defineProps({
         post: {
             type: Object,
@@ -85,12 +87,23 @@
 
     //Enviar post
     function submit() {
-        form.put(route('post.update', props.post.id), {
-            preserveScroll: true,
-            onSuccess: () => {
-                show.value = false
-            }
-        })
+        if (form.id) {
+            form.put(route('post.update', props.post.id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    show.value = false
+                    form.reset()
+                }
+            })
+        } else {
+            form.post(route('post.create'), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    show.value = false
+                    form.reset()
+                }
+            });
+        }
     }
 
     //Cancelar post

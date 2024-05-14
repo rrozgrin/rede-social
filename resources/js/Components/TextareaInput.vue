@@ -5,7 +5,7 @@
     const props = defineProps({
         modelValue: {
             type: String,
-            required: true,
+            // required: true,
         },
         placeholder: String,
         autoResize: {

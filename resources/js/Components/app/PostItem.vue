@@ -101,10 +101,10 @@
         </div>
         <div class="mb-3" v-if="post && post.body">
             <Disclosure v-slot="{ open }">
-                <div v-if="!open && post.body" v-html="post.body.substring(0, 200)" class="ml-14 p-1" />
+                <div v-if="!open && post.body" v-html="post.body.substring(0, 200)" class="ck-content-output ml-14 p-1" />
                 <template v-if="post.body.length >= 200">
                     <DisclosurePanel>
-                        <div v-html="post.body" class="ml-14 mr-8 px-1" />
+                        <div v-html="post.body" class="ck-content-output ml-14 mr-8 px-1" />
                     </DisclosurePanel>
                     <div class="flex justify-end">
                         <DisclosureButton class="text-purple-400 text-sm">

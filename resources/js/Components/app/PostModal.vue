@@ -13,12 +13,14 @@
                             enter-to="opacity-100 scale-100" leave="duration-200 ease-in"
                             leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
                             <DialogPanel
-                                class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                                class="w-[720px] h-[300px] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                <DialogTitle as="h3" class="text-lg font-medium leading-6 text-purple-900">
                                     Editar post
                                 </DialogTitle>
                                 <div class="mt-2">
-                                    <TextareaInput v-model="form.body" class=" w-full"></TextareaInput>
+                                    <ckeditor :editor="editor" v-model="form.body" :config="editorConfig">
+                                    </ckeditor>
+                                    <!-- <TextareaInput v-model="form.body" class=" w-full"></TextareaInput> -->
                                 </div>
 
                                 <div class="mt-1 flex gap-1 justify-end">
@@ -43,13 +45,21 @@
 </template>
 
 <script setup>
-    import { computed, reactive, watch } from 'vue'
-    import {TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle} from '@headlessui/vue'
+    import { computed, watch } from 'vue'
+    import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
     import TextareaInput from '../TextareaInput.vue';
     import { useForm } from '@inertiajs/vue3';
 
-    const emit = defineEmits(['update:modelValue'])
+    import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
+    //CKEditor 
+    const editor = ClassicEditor;
+    const editorConfig = {
+        toolbar: ['bold', 'italic', '|', 'bulletedList', 'numberedList', '|', 'outdent', 'indent', 'blockQuote','|','link','heading']
+    }
+
+    //Formulário do post
+    const emit = defineEmits(['update:modelValue'])
     const props = defineProps({
         post: {
             type: Object,
@@ -73,6 +83,7 @@
         form.body = props.post.body
     })
 
+    //Enviar post
     function submit() {
         form.put(route('post.update', props.post.id), {
             preserveScroll: true,
@@ -82,6 +93,7 @@
         })
     }
 
+    //Cancelar post
     function closeModal() {
         show.value = false
     }

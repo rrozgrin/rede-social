@@ -2,19 +2,15 @@
     import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
     import { HandThumbUpIcon, ChatBubbleLeftRightIcon, ChevronDownIcon, TrashIcon, EllipsisVerticalIcon, PencilIcon } from '@heroicons/vue/24/solid'
     import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-    import { ref } from "vue";
     import { router } from '@inertiajs/vue3';
+    import { isImage } from '@/helpers';
 
     const emit = defineEmits(['editClick'])
     const props = defineProps({
         post: Object
     })
     
-    function isImage(attachment) {
-        const mime = attachment.mime.split('/')
-        return mime[0].toLowerCase() === 'image'
-    }
-
+  
     function openEditModal(){
         emit('editClick', props.post)
     }
@@ -114,6 +110,11 @@
                 </template>
             </Disclosure>
         </div>
+         <!-- <div class="grid grid-cols-2 gap-3 mb-3">
+            <div v-for="attachment of post.attachments"> 
+                <img v-if="isImage(attachment)" :src="attachments.url" class="object-cover aspect-square" />
+            </div>
+        </div> -->
         <div class="flex justify-end">
             <button class="flex mx-2 rounded-md gap-1 bg-violet-100 hover:bg-purple-200 justify-center py-1 px-2">
                 <HandThumbUpIcon class="w-5 h-5" />

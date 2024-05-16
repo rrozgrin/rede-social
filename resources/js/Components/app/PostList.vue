@@ -17,7 +17,7 @@
 </script>
 
 <template>
-    <div class="container mx-auto shadow-none">
+    <div class="my-1 mx-1  container shadow-none">
         <div>
             <PostItem v-for="post of posts" :key="post.id" :post="post" @editClick="openEditModal"/>
             <PostModal :post="editPost" v-model="showEditModal" />

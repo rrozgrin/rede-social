@@ -4,7 +4,7 @@
     import { useForm } from '@inertiajs/vue3';
     import { PaperClipIcon, XMarkIcon } from '@heroicons/vue/24/solid';
     import { ref } from 'vue';
-    import { isImage } from '@/helpers';
+    import { isImageOrVideo } from '@/helpers';
 
     import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
@@ -49,8 +49,9 @@
      * }
      */
     const attachmentFiles = ref([])
+    const errorMessage = ref('');
 
-    //Incluir/Atualizar post
+    //Incluir-Atualizar post
     function submit() {
         if (form.id) {
             form.put(route('post.update', props.post.id), {
@@ -80,21 +81,28 @@
 
     //Incluir arquivos
     async function onAttachmentChoose(event) {
+        errorMessage.value = '';
         for (const file of event.target.files) {
             const upFile = {
                 file,
                 url: await readFile(file)
             }
 
-            attachmentFiles.value.push(upFile)
+            if (isImageOrVideo({ mime: file.type })) {
+                attachmentFiles.value.push(upFile);
+            } else {
+                errorMessage.value = 'O tipo de arquivo selecionado não é suportado. Apenas imagens e vídeos são permitidos.';
+                setTimeout(() => {
+                    errorMessage.value = '';
+                }, 3000);
+            }
         }
         event.target.value = null;
-        console.log(attachmentFiles.value)
     }
 
     async function readFile(file) {
         return new Promise((res, rej) => {
-            if (isImage({ mime: file.type })) {
+            if (isImageOrVideo({ mime: file.type })) {
                 const reader = new FileReader();
                 reader.onload = () => {
                     res(reader.result)
@@ -107,8 +115,8 @@
         })
     }
 
-    function removeFile(upFile){
-        attachmentFiles.value = attachmentFiles.value.filter(f=>f!== upFile)
+    function removeFile(upFile) {
+        attachmentFiles.value = attachmentFiles.value.filter(f => f !== upFile)
     }
 
 
@@ -136,19 +144,19 @@
                                     <ckeditor :editor="editor" v-model="form.body" :config="editorConfig">
                                     </ckeditor>
                                     <div class="grid grid-cols-3 gap-1 mb-3">
-                                        <template v-for="upFile of attachmentFiles">
+                                        <template v-for="upFile of attachmentFiles" :key="upFile.file.name">
                                             <div class="flex relative  items-center justify-center">
-                                                    <button @click="removeFile(upFile)"
-                                                        class="absolute mt-2 right-1 top-1 inline-flex mr-1 opacity-60 bg-purple-50 hover:opacity-100 rounded-full hover:bg-purple-800  mb-2 text-purple-900 hover:text-purple-50 py-1 px-1 text-xs items-center">
-                                                        <XMarkIcon class="h-5 w-5" />
-                                                    </button>
-
-                                                <img v-if="isImage({ mime: upFile.file.type })" :src="upFile.url"
+                                                <button @click="removeFile(upFile)"
+                                                    class="absolute mt-2 right-1 top-1 inline-flex mr-1 opacity-60 bg-purple-50 hover:opacity-100 rounded-full hover:bg-purple-800  mb-2 text-purple-900 hover:text-purple-50 py-1 px-1 text-xs items-center">
+                                                    <XMarkIcon class="h-5 w-5" />
+                                                </button>
+                                                <img v-if="isImageOrVideo({ mime: upFile.file.type })" :src="upFile.url"
                                                     class="shadow-lg rounded-lg my-2 mx-2 object-cover aspect-square" />
                                             </div>
                                         </template>
                                     </div>
                                 </div>
+                                <div v-if="errorMessage" class="text-red-500">{{ errorMessage }}</div>
                                 <div class="w-full px-2 py-1 flex justify-end items-center">
                                     <button @click="submit" type="button"
                                         class="flex items-center relative text-purple-600">

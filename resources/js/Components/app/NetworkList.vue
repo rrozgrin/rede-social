@@ -7,7 +7,7 @@
 </script>
 
 <template>
-    <div class="px-3 pb-3 mb-2 bg-white w-full rounded-xl overflow-hidden flex flex-col">
+    <div class="px-3 pb-3 ml-1 my-1 mb-2 bg-white w-full rounded-xl overflow-hidden flex flex-col">
         <div class="flex-1 block lg:hidden">
             <Disclosure v-slot="{ open }">
                 <DisclosureButton class="w-full">

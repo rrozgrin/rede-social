@@ -1,5 +1,6 @@
-export const isImage = (attachment) => {
+export const isImageOrVideo = (attachment) => {
     let mime = attachment.mime || attachment.type
     mime = mime.split('/')
-    return mime[0].toLowerCase() === 'image'
+    const fileType = mime[0].toLowerCase();
+    return fileType === 'image' || fileType === 'video';    
 }

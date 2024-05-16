@@ -13,8 +13,8 @@
 </script>
 
 <template>
-    <div class="py-6 bg-white rounded-lg p-3 mb-5">
-        <div @click="showCreatePostModal" class="h-12 flex justify-center items-center border-2 text-purple-400 border-purple-900 bg-purple-100  rounded-lg shadow-sm w-full mb-3" rows="1">
+    <div class="py-2 rounded-lg  mb-2 ">
+        <div @click="showCreatePostModal" class="py-2 flex justify-center items-center shadow-lg  text-purple-200  bg-gradient-to-t from-purple-600 to-purple-700  rounded-xl w-full">
         Clique aqui para criar um novo post
         </div>
         <!-- <div class="flex justify-end">

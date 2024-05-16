@@ -3,8 +3,7 @@
     import { HandThumbUpIcon, ChatBubbleLeftRightIcon, ChevronDownIcon, TrashIcon, EllipsisVerticalIcon, PencilIcon } from '@heroicons/vue/24/solid'
     import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
     import { router } from '@inertiajs/vue3';
-    import { isImage } from '@/helpers';
-
+    
     const emit = defineEmits(['editClick'])
     const props = defineProps({
         post: Object

@@ -1,22 +1,24 @@
 <script setup>
     import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
-    import { HandThumbUpIcon, ChatBubbleLeftRightIcon, ChevronDownIcon, TrashIcon, EllipsisVerticalIcon, PencilIcon } from '@heroicons/vue/24/solid'
+    import { ChevronDownIcon, TrashIcon, EllipsisVerticalIcon, PencilIcon } from '@heroicons/vue/24/solid'
+    import { HandThumbUpIcon, ChatBubbleLeftRightIcon } from '@heroicons/vue/24/outline'
     import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
     import { router } from '@inertiajs/vue3';
-    
+    import { isImageOrVideo } from '@/helpers';
+
     const emit = defineEmits(['editClick'])
     const props = defineProps({
         post: Object
     })
-    
-  
-    function openEditModal(){
+
+
+    function openEditModal() {
         emit('editClick', props.post)
     }
 
     function deletePost() {
-        if(window.confirm('Está certo que deseja exlcuir esse post?')){
-            router.delete(route('post.destroy',props.post),{
+        if (window.confirm('Está certo que deseja exlcuir esse post?')) {
+            router.delete(route('post.destroy', props.post), {
                 preserveScroll: true,
             })
         }
@@ -96,7 +98,8 @@
         </div>
         <div class="mb-3" v-if="post && post.body">
             <Disclosure v-slot="{ open }">
-                <div v-if="!open && post.body" v-html="post.body.substring(0, 200)" class="ck-content-output ml-14 p-1" />
+                <div v-if="!open && post.body" v-html="post.body.substring(0, 200)"
+                    class="ck-content-output ml-14 p-1" />
                 <template v-if="post.body.length >= 200">
                     <DisclosurePanel>
                         <div v-html="post.body" class="ck-content-output ml-14 mr-8 px-1" />
@@ -109,23 +112,25 @@
                 </template>
             </Disclosure>
         </div>
-         <!-- <div class="grid grid-cols-2 gap-3 mb-3">
-            <div v-for="attachment of post.attachments"> 
-                <img v-if="isImage(attachment)" :src="attachments.url" class="object-cover aspect-square" />
+        <div class="grid gap-3 mb-3" :class="[
+            post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
+        ]">
+            <div v-for="attachment of post.attachments" :key="attachment.url">
+                <img v-if="isImageOrVideo(attachment)" :src="attachment.url" class="object-cover aspect-square" />
             </div>
-        </div> -->
+        </div>
         <div class="flex justify-end">
-            <button class="flex mx-2 rounded-md gap-1 bg-violet-100 hover:bg-purple-200 justify-center py-1 px-2">
+            <button class="flex mx-2 rounded-md gap-1 bg-violet-100  hover:bg-purple-200 justify-center py-1 px-2">
                 <HandThumbUpIcon class="w-5 h-5" />
                 Curtir
             </button>
-            <button class="flex mx-2 rounded-md gap-1 bg-violet-100 hover:bg-purple-200 justify-center py-1 px-2">
+            <button class="flex mx-2 rounded-md gap-1 bg-violet-100  hover:bg-purple-200 justify-center py-1 px-2">
                 <ChatBubbleLeftRightIcon class="w-5 h-5" />
                 Comentar
             </button>
         </div>
     </div>
-    
+
 </template>
 
 <style scoped></style>

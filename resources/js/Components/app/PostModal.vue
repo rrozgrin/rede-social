@@ -29,6 +29,7 @@
     const form = useForm({
         id: null,
         body: '',
+        attachments: [],
     })
 
     const show = computed({
@@ -53,12 +54,13 @@
 
     //Incluir-Atualizar post
     function submit() {
+        form.attachments = attachmentFiles.value.map(upFile => upFile.file)
         if (form.id) {
             form.put(route('post.update', props.post.id), {
                 preserveScroll: true,
                 onSuccess: () => {
                     show.value = false
-                    form.reset()
+                    closeModal()
                 }
             })
         } else {
@@ -66,7 +68,7 @@
                 preserveScroll: true,
                 onSuccess: () => {
                     show.value = false
-                    form.reset()
+                    closeModal()
                 }
             });
         }
@@ -75,6 +77,10 @@
     //Cancelar post
     function closeModal() {
         show.value = false
+        resetModal()
+    }
+
+    function resetModal() {
         form.reset()
         attachmentFiles.value = []
     }
@@ -143,7 +149,9 @@
                                 <div class="mt-2">
                                     <ckeditor :editor="editor" v-model="form.body" :config="editorConfig">
                                     </ckeditor>
-                                    <div class="grid grid-cols-3 gap-1 mb-3">
+                                    <div class="grid gap-1 mb-3" :class="[
+                                        attachmentFiles.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
+                                    ]">
                                         <template v-for="upFile of attachmentFiles" :key="upFile.file.name">
                                             <div class="flex relative  items-center justify-center">
                                                 <button @click="removeFile(upFile)"
@@ -151,7 +159,7 @@
                                                     <XMarkIcon class="h-5 w-5" />
                                                 </button>
                                                 <img v-if="isImageOrVideo({ mime: upFile.file.type })" :src="upFile.url"
-                                                    class="shadow-lg rounded-lg my-2 mx-2 object-cover aspect-square" />
+                                                    class="shadow-lg rounded-lg my-2 mx-2 object-contain" />
                                             </div>
                                         </template>
                                     </div>

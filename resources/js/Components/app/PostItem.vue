@@ -44,7 +44,7 @@
                     <small class="text-purple-600 pl-3 -pt-">{{ post.updated_at }}</small>
                 </div>
                 <div class="w-9 ">
-                    <Menu as="div" class="relative inline-block text-left">
+                    <Menu as="div" class="relative inline-block text-left z-10">
                         <div>
                             <MenuButton
                                 class="w-8 h-8 rounded-full hover:bg-purple-900 hover:text-purple-100 text-purple-900  transition flex items-center justify-center">
@@ -115,9 +115,17 @@
         <div class="grid gap-3 mb-3" :class="[
             post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
         ]">
-            <div v-for="attachment of post.attachments" :key="attachment.url">
-                <img v-if="isImageOrVideo(attachment)" :src="attachment.url" class="object-cover aspect-square" />
-            </div>
+            <template v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="attachment.url">
+                <div class="group flex flex-col items-center justify-center text-gray-500 relative">
+                    <div v-if="index === 3 && post.attachments.length > 4"
+                        class="absolute left-0 top-0 right-0 bottom-0 z-10 bg-black/60 text-white flex items-center justify-center text-2xl">
+                        + {{ post.attachments.length - 4 }} mais
+                    </div>
+
+                    <img v-if="isImageOrVideo(attachment)" :src="attachment.url"
+                        class="object-cover aspect-square  drop-shadow-md rounded-md" />
+                </div>
+            </template>
         </div>
         <div class="flex justify-end">
             <button class="flex mx-2 rounded-md gap-1 bg-violet-100  hover:bg-purple-200 justify-center py-1 px-2">

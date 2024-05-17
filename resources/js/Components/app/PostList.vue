@@ -14,13 +14,17 @@
         showEditModal.value = true;
     }
 
+    function onModalHide(){
+        editPost.value = {};
+    }
+
 </script>
 
 <template>
     <div class="my-1 mx-1  container shadow-none">
         <div>
             <PostItem v-for="post of posts" :key="post.id" :post="post" @editClick="openEditModal"/>
-            <PostModal :post="editPost" v-model="showEditModal" />
+            <PostModal :post="editPost" v-model="showEditModal" @hide="onModalHide" />
         </div>
     </div>
 

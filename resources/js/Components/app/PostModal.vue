@@ -2,7 +2,7 @@
     import { computed, watch } from 'vue'
     import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
     import { useForm } from '@inertiajs/vue3';
-    import { PaperClipIcon, XMarkIcon } from '@heroicons/vue/24/solid';
+    import { PaperClipIcon, XMarkIcon, ArrowUturnLeftIcon } from '@heroicons/vue/24/solid';
     import { ref } from 'vue';
     import { isImageOrVideo } from '@/helpers';
 
@@ -16,7 +16,7 @@
     }
 
     //posts
-    const emit = defineEmits(['update:modelValue'])
+    const emit = defineEmits(['update:modelValue','hide'])
 
     const props = defineProps({
         post: {
@@ -27,9 +27,10 @@
     })
 
     const form = useForm({
-        id: null,
         body: '',
         attachments: [],
+        deleted_file_ids: [],
+        _method: 'POST',
     })
 
     const show = computed({
@@ -37,9 +38,12 @@
         set: (value) => emit('update:modelValue', value),
     })
 
+    const computedAttachments = computed(() => {
+        return [...attachmentFiles.value, ...(props.post.attachments || [])]
+    })
+
     watch(() => props.post, () => {
-        form.id = props.post.id
-        form.body = props.post.body
+        form.body = props.post.body || ''
     })
 
     //Arquivos
@@ -55,8 +59,9 @@
     //Incluir-Atualizar post
     function submit() {
         form.attachments = attachmentFiles.value.map(upFile => upFile.file)
-        if (form.id) {
-            form.put(route('post.update', props.post.id), {
+        if (props.post.id) {
+            form._method = 'PUT'
+            form.post(route('post.update', props.post.id), {
                 preserveScroll: true,
                 onSuccess: () => {
                     show.value = false
@@ -77,12 +82,14 @@
     //Cancelar post
     function closeModal() {
         show.value = false
+        emit('hide')
         resetModal()
     }
 
     function resetModal() {
         form.reset()
         attachmentFiles.value = []
+        props.post.attachments.forEach(f => f.deleted = false);
     }
 
     //Incluir arquivos
@@ -122,7 +129,18 @@
     }
 
     function removeFile(upFile) {
-        attachmentFiles.value = attachmentFiles.value.filter(f => f !== upFile)
+        if (upFile.file) {
+            attachmentFiles.value = attachmentFiles.value.filter(f => f !== upFile);
+        } else {
+            form.deleted_file_ids.push(upFile.id);
+            upFile.deleted = true;
+        }
+
+    }
+
+    function undoDelete(upFile) {
+        upFile.deleted = false;
+        form.deleted_file_ids = form.deleted_file_ids.filter(id => upFile.id !== id);
     }
 
 
@@ -144,22 +162,28 @@
                             <DialogPanel
                                 class="lg:w-[600px] bg-purple-50 sm:w-full transform overflow-hidden rounded-2xl p-6 text-left align-middle shadow-xl transition-all">
                                 <DialogTitle as="h3" class="text-lg font-medium leading-6 text-purple-900">
-                                    {{ form.id ? 'Editar post' : 'Novo post' }}
+                                    {{ post ? 'Editar post' : 'Novo post' }}
                                 </DialogTitle>
                                 <div class="mt-2">
                                     <ckeditor :editor="editor" v-model="form.body" :config="editorConfig">
                                     </ckeditor>
                                     <div class="grid gap-1 mb-3" :class="[
-                                        attachmentFiles.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
+                                        computedAttachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
                                     ]">
-                                        <template v-for="upFile of attachmentFiles" :key="upFile.file.name">
+                                        <template v-for="upFile of computedAttachments" :key="upFile.file">
                                             <div class="flex relative  items-center justify-center">
+                                                <div v-if="upFile.deleted" @click="undoDelete(upFile)"
+                                                    class="absolute left-0  right-0 py-1 cursor-pointer z-10 opacity-50 aspect-square px-2 text-xs text-center flex justify-center items-center  bg-black text-white">
+                                                    <ArrowUturnLeftIcon class="h-5 w-5 mr-1" />
+                                                    <p class="text-xs">clique para manter</p>
+                                                </div>
                                                 <button @click="removeFile(upFile)"
                                                     class="absolute mt-2 right-1 top-1 inline-flex mr-1 opacity-60 bg-purple-50 hover:opacity-100 rounded-full hover:bg-purple-800  mb-2 text-purple-900 hover:text-purple-50 py-1 px-1 text-xs items-center">
                                                     <XMarkIcon class="h-5 w-5" />
                                                 </button>
-                                                <img v-if="isImageOrVideo({ mime: upFile.file.type })" :src="upFile.url"
-                                                    class="shadow-lg rounded-lg my-2 mx-2 object-contain" />
+                                                <img v-if="isImageOrVideo(upFile.file || upFile)" :src="upFile.url"
+                                                    class="shadow-lg rounded-lg my-2 mx-2 aspect-square object-contain"
+                                                    :class="upFile.deleted ? 'opacity-50' : ''" />
                                             </div>
                                         </template>
                                     </div>

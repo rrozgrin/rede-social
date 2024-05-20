@@ -6,14 +6,14 @@
     import { router } from '@inertiajs/vue3';
     import { isImageOrVideo } from '@/helpers';
 
-    const emit = defineEmits(['editClick'])
+    const emit = defineEmits(['editClick','attachmentClick'])
     const props = defineProps({
         post: Object
     })
 
 
     function openEditModal() {
-        emit('editClick', props.post)
+        emit('editClick', props.post);
     }
 
     function deletePost() {
@@ -23,6 +23,11 @@
             })
         }
     }
+
+    function openAttachment(index){
+        emit('attachmentClick', props.post, index);
+    }
+
 </script>
 
 <template>
@@ -115,15 +120,15 @@
         <div class="grid gap-3 mb-3" :class="[
             post.attachments.length === 1 ? 'grid-cols-1' : 'grid-cols-2'
         ]">
-            <template v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="attachment.url">
-                <div class="group flex flex-col items-center justify-center text-gray-500 relative">
+            <template  v-for="(attachment, index) of post.attachments.slice(0, 4)" :key="attachment.url">
+                <div @click="openAttachment(index)" class="group flex flex-col items-center justify-center text-gray-500 relative">
                     <div v-if="index === 3 && post.attachments.length > 4"
                         class="absolute left-0 top-0 right-0 bottom-0 z-10 bg-black/60 text-white flex items-center justify-center text-2xl">
                         + {{ post.attachments.length - 4 }} mais
                     </div>
 
                     <img v-if="isImageOrVideo(attachment)" :src="attachment.url"
-                        class="object-cover aspect-square  drop-shadow-md rounded-md" />
+                        class="object-cover aspect-square cursor-pointer drop-shadow-md rounded-md" />
                 </div>
             </template>
         </div>

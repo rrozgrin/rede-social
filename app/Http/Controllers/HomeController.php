@@ -8,12 +8,20 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
     public function index(Request $request)
-    {
-        $posts = Post::query()->latest()->paginate(20);
+    {   
+        $userId = Auth::id();
+        $posts = Post::query()
+                ->withCount('reactions')
+                ->with(['reactions'=>function($query) use ($userId){
+                    $query->where('user_id', $userId);
+                }])
+                ->latest()
+                ->paginate(20);
 
         return Inertia::render('Home', [
             'canLogin' => Route::has('login'),

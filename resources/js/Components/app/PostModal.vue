@@ -108,7 +108,9 @@
     function resetModal() {
         form.reset();
         attachmentFiles.value = [];
-        props.post.attachments.forEach(f => f.deleted = false);
+        if (props.post && props.post.attachments) {
+            props.post.attachments.forEach(f => f.deleted = false);
+        }
     }
 
     //Incluir arquivos
@@ -218,7 +220,8 @@
                                     </div>
                                 </div>
                                 <div v-if="errorMessage" class="text-red-500">{{ errorMessage }}</div>
-                                <div v-if="formErrors.attachments" class="text-red-500">{{ formErrors.attachments }}</div>
+                                <div v-if="formErrors.attachments" class="text-red-500">{{ formErrors.attachments }}
+                                </div>
                                 <div class="w-full px-2 py-1 flex justify-end items-center">
                                     <button @click="submit" type="button"
                                         class="flex items-center relative text-purple-600">

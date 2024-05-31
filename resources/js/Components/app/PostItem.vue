@@ -2,10 +2,12 @@
     import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
     import { ChevronDownIcon, TrashIcon, EllipsisVerticalIcon, PencilIcon } from '@heroicons/vue/24/solid'
     import { HandThumbUpIcon, ChatBubbleLeftRightIcon } from '@heroicons/vue/24/outline'
+    import { HandThumbUpIcon as SolidHandThumbUpIcon } from '@heroicons/vue/24/solid'
     import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
     import { router } from '@inertiajs/vue3';
     import { isImage } from '@/helpers';
     import { isVideo } from '@/helpers';
+    import axiosClient from '@/axiosClient.js'
 
     const emit = defineEmits(['editClick', 'attachmentClick'])
     const props = defineProps({
@@ -27,6 +29,15 @@
 
     function openAttachment(index) {
         emit('attachmentClick', props.post, index);
+    }
+
+    function sendReaction() {
+        axiosClient.post(route('post.reaction', props.post), {
+            reaction: 'Curtir'
+        }).then(({ data }) => {
+            props.post.current_user_has_reaction = data.current_user_has_reaction;
+            props.post.num_reactions = data.num_reactions
+        });
     }
 
 </script>
@@ -137,9 +148,17 @@
             </template>
         </div>
         <div class="flex justify-end">
-            <button class="flex mx-2 rounded-md gap-1 bg-violet-100  hover:bg-purple-200 justify-center py-1 px-2">
-                <HandThumbUpIcon class="w-5 h-5" />
-                Curtir
+            <button @click="sendReaction"
+                class="flex mx-2 rounded-md gap-1 bg-violet-100  hover:bg-purple-200 justify-center py-1 px-2">
+                <div>
+                    <template v-if="data.current_user_has_reaction">
+                        <SolidHandThumbUpIcon class="w-5 h-5" />
+                    </template>
+                    <template v-else>
+                        <HandThumbUpIcon class="w-5 h-5" />
+                    </template>
+                </div>
+                {{ post.current_user_has_reaction ? 'Curtido' : 'Curtir' }} ({{ post.num_reactions }})
             </button>
             <button class="flex mx-2 rounded-md gap-1 bg-violet-100  hover:bg-purple-200 justify-center py-1 px-2">
                 <ChatBubbleLeftRightIcon class="w-5 h-5" />

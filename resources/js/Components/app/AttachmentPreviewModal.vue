@@ -2,7 +2,8 @@
     import { computed } from 'vue'
     import { TransitionRoot, TransitionChild, Dialog, DialogPanel } from '@headlessui/vue'
     import { XMarkIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid';
-    import { isImageOrVideo } from '@/helpers';
+    import { isImage } from '@/helpers';
+    import { isVideo } from '@/helpers';
 
     const emit = defineEmits(['update:modelValue', 'update:index', 'hide']);
 
@@ -65,17 +66,20 @@
                                     class="absolute right-3 top-3 w-10 h-10 rounded-full hover:bg-purple-900/60 transition flex items-center justify-center text-black hover:text-purple-50 z-40">
                                     <XMarkIcon class="w-6 h-6 " />
                                 </button>
-                                <div class="relative group h-full">
+                                <div class="relative group max-h-max bg-slate-700 ">
                                     <div @click="prev"
-                                        class="absolute left-0 h-full flex items-center opacity-15 hover:opacity-70 justify-between hover:bg-black/10">
-                                        <ChevronLeftIcon class=" w-12" />
+                                        class="absolute left-0 z-20 h-full flex items-center opacity-60 hover:opacity-70 justify-between hover:bg-black/10">
+                                        <ChevronLeftIcon class="text-purple-400 shadow-lg w-12" />
                                     </div>
                                     <div @click="next"
-                                        class="absolute right-0 h-full flex items-center opacity-15 hover:opacity-70 justify-between hover:bg-black/10">
-                                        <ChevronRightIcon class="w-12" />
+                                        class="absolute right-0  z-20 h-full flex items-center opacity-60 hover:opacity-70 justify-between hover:bg-black/10">
+                                        <ChevronRightIcon class="text-purple-400 shadow-lg w-12" />
                                     </div>
-                                    <div class="flex items-center justify-center">
-                                        <img v-if="isImageOrVideo(attachment)" :src="attachment.url" />
+                                    <div class="flex items-center justify-center ">
+                                        <img v-if="isImage(attachment)" :src="attachment.url" width="480"
+                                            height="auto" />
+                                        <video v-else-if="isVideo(attachment)" :src="attachment.url" width="320"
+                                            height="240" controls="controls" />
                                     </div>
                                 </div>
                             </DialogPanel>

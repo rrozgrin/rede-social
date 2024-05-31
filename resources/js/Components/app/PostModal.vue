@@ -2,9 +2,10 @@
     import { computed, watch } from 'vue'
     import { TransitionRoot, TransitionChild, Dialog, DialogPanel, DialogTitle } from '@headlessui/vue'
     import { useForm } from '@inertiajs/vue3';
-    import { PaperClipIcon, XMarkIcon, ArrowUturnLeftIcon } from '@heroicons/vue/24/solid';
+    import { PaperClipIcon, XMarkIcon, ArrowUturnLeftIcon, VideoCameraIcon } from '@heroicons/vue/24/solid';
     import { ref } from 'vue';
-    import { isImageOrVideo } from '@/helpers';
+    import { isImage } from '@/helpers';
+    import { isVideo } from '@/helpers';
 
     import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
@@ -16,7 +17,7 @@
     }
 
     //posts
-    const emit = defineEmits(['update:modelValue','hide'])
+    const emit = defineEmits(['update:modelValue', 'hide']);
 
     const props = defineProps({
         post: {
@@ -24,27 +25,27 @@
             requered: true,
         },
         modelValue: Boolean,
-    })
+    });
 
     const form = useForm({
         body: '',
         attachments: [],
         deleted_file_ids: [],
         _method: 'POST',
-    })
+    });
 
     const show = computed({
         get: () => props.modelValue,
         set: (value) => emit('update:modelValue', value),
-    })
+    });
 
     const computedAttachments = computed(() => {
-        return [...attachmentFiles.value, ...(props.post.attachments || [])]
-    })
+        return [...attachmentFiles.value, ...(props.post.attachments || [])];
+    });
 
     watch(() => props.post, () => {
         form.body = props.post.body || ''
-    })
+    });
 
     //Arquivos
 
@@ -53,42 +54,60 @@
      *      url:  '',
      * }
      */
-    const attachmentFiles = ref([])
+    const attachmentFiles = ref([]);
     const errorMessage = ref('');
+    const formErrors = ref({});
 
     //Incluir-Atualizar post
     function submit() {
-        form.attachments = attachmentFiles.value.map(upFile => upFile.file)
+        form.attachments = attachmentFiles.value.map(upFile => upFile.file);
         if (props.post.id) {
-            form._method = 'PUT'
+            form._method = 'PUT';
             form.post(route('post.update', props.post.id), {
                 preserveScroll: true,
                 onSuccess: () => {
-                    show.value = false
-                    closeModal()
+                    show.value = false;
+                    closeModal();
+                },
+                onError: (errors) => {
+                    processErrors(errors)
                 }
             })
         } else {
             form.post(route('post.create'), {
                 preserveScroll: true,
                 onSuccess: () => {
-                    show.value = false
-                    closeModal()
+                    show.value = false;
+                    closeModal();
+                },
+                onError: (errors) => {
+                    processErrors(errors)
                 }
             });
         }
     }
 
+    //erros
+    function processErrors(errors) {
+        formErrors.value = errors
+        for (const key in errors) {
+            if (key.includes('.')) {
+                const [, index] = key.split('.')
+                attachmentErrors.value[index] = errors[key]
+            }
+        }
+    }
+
     //Cancelar post
     function closeModal() {
-        show.value = false
-        emit('hide')
-        resetModal()
+        show.value = false;
+        emit('hide');
+        resetModal();
     }
 
     function resetModal() {
-        form.reset()
-        attachmentFiles.value = []
+        form.reset();
+        attachmentFiles.value = [];
         props.post.attachments.forEach(f => f.deleted = false);
     }
 
@@ -101,10 +120,11 @@
                 url: await readFile(file)
             }
 
-            if (isImageOrVideo({ mime: file.type })) {
+            if (isImage({ mime: file.type, size: file.size }) || isVideo({ mime: file.type, size: file.size })) {
                 attachmentFiles.value.push(upFile);
+
             } else {
-                errorMessage.value = 'O tipo de arquivo selecionado não é suportado. Apenas imagens e vídeos são permitidos.';
+                errorMessage.value = isVideo.error || isImage.error;
                 setTimeout(() => {
                     errorMessage.value = '';
                 }, 3000);
@@ -115,15 +135,15 @@
 
     async function readFile(file) {
         return new Promise((res, rej) => {
-            if (isImageOrVideo({ mime: file.type })) {
+            if (isImage({ mime: file.type }) || isVideo({ mime: file.type })) {
                 const reader = new FileReader();
                 reader.onload = () => {
-                    res(reader.result)
+                    res(reader.result);
                 }
                 reader.onerror = rej
                 reader.readAsDataURL(file);
             } else {
-                res(null)
+                res(null);
             }
         })
     }
@@ -181,14 +201,24 @@
                                                     class="absolute mt-2 right-1 top-1 inline-flex mr-1 opacity-60 bg-purple-50 hover:opacity-100 rounded-full hover:bg-purple-800  mb-2 text-purple-900 hover:text-purple-50 py-1 px-1 text-xs items-center">
                                                     <XMarkIcon class="h-5 w-5" />
                                                 </button>
-                                                <img v-if="isImageOrVideo(upFile.file || upFile)" :src="upFile.url"
+                                                <img v-if="isImage(upFile.file || upFile)" :src="upFile.url"
                                                     class="shadow-lg rounded-lg my-2 mx-2 aspect-square object-contain"
                                                     :class="upFile.deleted ? 'opacity-50' : ''" />
+                                                <div v-if="isVideo(upFile.file || upFile)"
+                                                    class="flex flex-col justify-center aspect-square items-center px-3"
+                                                    :class="upFile.deleted ? 'opacity-50' : ''">
+                                                    <VideoCameraIcon class="w-10 h-10 mb-3" />
+
+                                                    <small class="text-center">
+                                                        {{ (upFile.file || upFile).name }}
+                                                    </small>
+                                                </div>
                                             </div>
                                         </template>
                                     </div>
                                 </div>
                                 <div v-if="errorMessage" class="text-red-500">{{ errorMessage }}</div>
+                                <div v-if="formErrors.attachments" class="text-red-500">{{ formErrors.attachments }}</div>
                                 <div class="w-full px-2 py-1 flex justify-end items-center">
                                     <button @click="submit" type="button"
                                         class="flex items-center relative text-purple-600">

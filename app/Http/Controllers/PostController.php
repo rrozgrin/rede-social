@@ -29,14 +29,14 @@ class PostController extends Controller
 
                 /** @var \Illuminate\Http\UploadedFile[] $files */
                 $files = $request->file('attachments');
-
+                
                 foreach ($files as $file) {
                     $filePath = $file->store('attachments/' . $post->id, 'public');
                     PostAttachment::create([
                         'post_id' => $post->id,
                         'name' => $file->getClientOriginalName(),
                         'path' => $filePath,
-                        'mime' => $file->getMimeType(),
+                        'mime' => $file->getClientMimeType(),
                         'size' => $file->getSize(),
                         'created_by' => $user->id,
                     ]);
